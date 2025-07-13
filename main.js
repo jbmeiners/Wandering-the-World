@@ -1,4 +1,4 @@
-// Album links - use ISO Alpha-3 country codes
+// Album links - ISO Alpha-3 country codes
 const albumLinks = {
   "ECU": "https://photos.app.goo.gl/2WRE3e5T3aumguWS9"
 };
@@ -31,11 +31,23 @@ fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.g
         const code = feature.id;
         const name = feature.properties.name;
 
-        layer.bindTooltip(name); // Show name tooltip on hover
+        // Tooltip on hover with country name
+        layer.bindTooltip(name);
 
         if (albumLinks[code]) {
+          // Popup content with dynamic country name and clickable link
+          const popupHtml = `
+            <strong>${name}</strong><br>
+            <a href="${albumLinks[code]}" target="_blank" rel="noopener noreferrer">
+              📸 View pictures from ${name}
+            </a>
+          `;
+
+          layer.bindPopup(popupHtml);
+
+          // Open popup on click
           layer.on("click", function () {
-            window.open(albumLinks[code], "_blank", "noopener");
+            this.openPopup();
           });
         }
       }
