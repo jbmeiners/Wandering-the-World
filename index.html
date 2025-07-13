@@ -1,23 +1,95 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>World Photo Map</title>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
+  <title>Interactive World Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Leaflet CSS -->
   <link
     rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+    integrity="sha256-sA+ePhlqvzUPa9vG9U4x65lzL8VtQ3Nju48T9Y3OGNk="
+    crossorigin=""
   />
   <style>
+    /* Make sure map container fills viewport */
     #map {
       height: 100vh;
-      width: 100%;
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+    }
+    body, html {
+      margin: 0; padding: 0; height: 100%;
     }
   </style>
 </head>
 <body>
   <div id="map"></div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="main.js?v=4"></script>
+  <!-- Leaflet JS -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+    integrity="sha256-nNR9v+XXcp3A1R0p0FmC4FrHP6z3Bk6BPP3CjE6j0bY="
+    crossorigin=""
+  ></script>
+
+  <script>
+    // Album links - use correct country code keys (ISO Alpha-3)
+    const albumLinks = {
+      "ECU": "https://photos.app.goo.gl/2WRE3e5T3aumguWS9"
+    };
+
+    // Initialize map centered on Ecuador
+    var map = L.map('map').setView([-1.5, -78], 5);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
+      .then(res => {
+        console.log("GeoJSON fetch status:", res.status);
+        return res.json();
+      })
+      .then(data => {
+        console.log("GeoJSON features count:", data.features.length);
+
+        // Check Ecuador feature and log to confirm id
+        const ecuadorFeature = data.features.find(f => f.properties.name === "Ecuador");
+        console.log("Ecuador feature:", ecuadorFeature);
+
+        L.geoJSON(data, {
+          style: feature => ({
+            color: "#666",
+            weight: 1,
+            fillColor: albumLinks[feature.id] ? "#ff8800" : "#00aaff",
+            fillOpacity: albumLinks[feature.id] ? 0.6 : 0.2
+          }),
+          onEachFeature: (feature, layer) => {
+            const code = feature.id;
+            const name = feature.properties.name;
+
+            layer.bindTooltip(name);
+
+            if (albumLinks[code]) {
+              console.log(`Binding popup for ${name} (${code})`);
+              const popupHtml = `
+                <strong>${name}</strong><br>
+                <a href="${albumLinks[code]}" target="_blank" rel="noopener noreferrer">
+                  📸 View Photo Album
+                </a>
+              `;
+              layer.bindPopup(popupHtml);
+              layer.on("click", function () {
+                console.log(`Clicked on ${name}`);
+                this.openPopup();
+              });
+            }
+          }
+        }).addTo(map);
+      })
+      .catch(err => console.error("GeoJSON load error:", err));
+  </script>
 </body>
 </html>
