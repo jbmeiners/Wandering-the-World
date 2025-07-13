@@ -1,6 +1,7 @@
 // Album links - ISO Alpha-3 country codes
 const albumLinks = {
-  "ECU": "https://photos.app.goo.gl/2WRE3e5T3aumguWS9"
+  "ECU": "https://photos.app.goo.gl/2WRE3e5T3aumguWS9",
+  "CHN": "https://photos.app.goo.gl/N9SYsuYxfsLpmN35A"
 };
 
 // Initialize map centered roughly between Ecuador and China
@@ -54,4 +55,3 @@ fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.g
     }).addTo(map);
   })
   .catch(err => console.error("GeoJSON load error:", err));
-
