@@ -1,54 +1,41 @@
-// Initialize map
-var map = L.map('map').setView([0, -78], 4); // Center near Ecuador
+// Set initial view centered on Ecuador
+var map = L.map('map').setView([-1.5, -78], 5);
 
-// Add base map layer
+// Add tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// Album links by ISO country code
-var albumLinks = {
+// Photo album links by ISO code
+const albumLinks = {
   "EC": "https://photos.app.goo.gl/2WRE3e5T3aumguWS9"
 };
 
-// Load country GeoJSON
-fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
-  .then(response => {
-    if (!response.ok) throw new Error("GeoJSON fetch failed");
-    return response.json();
-  })
+// Use the Johan geojson file where "id" = ISO code
+const geoUrl = "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json";
+
+fetch(geoUrl)
+  .then(res => res.json())
   .then(data => {
     L.geoJSON(data, {
-      style: function (feature) {
-        return {
-          color: "#666",
-          weight: 1,
-          fillColor: "#00aaff",
-          fillOpacity: 0.2
-        };
-      },
-      onEachFeature: function (feature, layer) {
-        const code = feature.properties.ISO_A2;
-        const name = feature.properties.ADMIN;
+      style: f => ({
+        color: "#666",
+        weight: 1,
+        fillColor: albumLinks[f.id] ? "#ff8800" : "#00aaff",
+        fillOpacity: albumLinks[f.id] ? 0.6 : 0.2
+      }),
+      onEachFeature: (f, layer) => {
+        const code = f.id;
+        const name = f.properties.name;
 
         // Tooltip on hover
-        layer.bindTooltip(name);
+        layer.bindTooltip(name, { interactive: true });
 
-        // Make clickable if there's an album
+        // Click to open album if available
         if (albumLinks[code]) {
-          layer.on("click", function () {
-            window.open(albumLinks[code], "_blank");
-          });
-
-          // Optional: highlight album-linked countries
-          layer.setStyle({
-            fillColor: "#ff9900", // Different color for countries with albums
-            fillOpacity: 0.5
-          });
+          layer.on("click", () => window.open(albumLinks[code], "_blank"));
         }
       }
     }).addTo(map);
   })
-  .catch(err => {
-    console.error("GeoJSON load error:", err);
-  });
+  .catch(err => console.error("Error loading GeoJSON:", err));
