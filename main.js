@@ -1,17 +1,17 @@
 // Initialize the map centered on Ecuador
 var map = L.map('map').setView([-1.5, -78], 5);
 
-// Add OpenStreetMap tile layer
+// Add tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// Define album links by country ISO code
+// Google Photos albums by country code
 const albumLinks = {
   "EC": "https://photos.app.goo.gl/2WRE3e5T3aumguWS9"
 };
 
-// Load countries GeoJSON
+// Load country shapes
 fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
   .then(res => res.json())
   .then(data => {
@@ -26,12 +26,12 @@ fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.g
         const code = feature.id;
         const name = feature.properties.name;
 
-        // Tooltip on hover
-        layer.bindTooltip(name, { permanent: false });
+        // Always bind tooltip
+        layer.bindTooltip(name);
 
+        // If we have an album for this country, show popup with a link
         if (albumLinks[code]) {
-          // Create the popup content
-          const popupHtml = `
+          const popupContent = `
             <div>
               <strong>${name}</strong><br>
               <a href="${albumLinks[code]}" target="_blank" rel="noopener noreferrer">
@@ -40,12 +40,10 @@ fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.g
             </div>
           `;
 
-          // Bind popup during setup (not just on click)
-          layer.bindPopup(popupHtml);
+          layer.bindPopup(popupContent);
 
-          // Open popup on click
-          layer.on("click", function (e) {
-            this.openPopup(e.latlng);
+          layer.on("click", function () {
+            this.openPopup();
           });
         }
       }
