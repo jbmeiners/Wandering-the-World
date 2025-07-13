@@ -1,13 +1,13 @@
 const countryAlbumLinks = {
   "ECU": "https://photos.app.goo.gl/2WRE3e5T3aumguWS9",
   "CHN": "https://photos.app.goo.gl/N9SYsuYxfsLpmN35A"
-  
+  // Add more country codes and links here as needed
 };
 
 const stateAlbumLinks = {
   "CA": "https://photos.app.goo.gl/californiaAlbumLink",
   "TX": "https://photos.app.goo.gl/texasAlbumLink"
-  
+  // Add more US state codes and links here as needed
 };
 
 const map = L.map('map').setView([20, 0], 2);
@@ -22,7 +22,7 @@ let usStatesLayer;
 function styleCountries(feature) {
   return {
     fillColor: countryAlbumLinks[feature.id] ? "#ff8800" : "#00aaff",
-    fillOpacity: countryAlbumLinks[feature.id] ? 0.6 : 0.2,
+    fillOpacity: 0.6,
     weight: 1,
     color: "#666"
   };
@@ -31,7 +31,7 @@ function styleCountries(feature) {
 function styleStates(feature) {
   return {
     fillColor: stateAlbumLinks[feature.properties.postal] ? "#ff8800" : "#00aaff",
-    fillOpacity: stateAlbumLinks[feature.properties.postal] ? 0.6 : 0.2,
+    fillOpacity: 0.6,
     weight: 1,
     color: "#666"
   };
@@ -67,46 +67,5 @@ function onEachState(feature, layer) {
   }
 }
 
-// Load countries
-fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
-  .then(res => res.json())
-  .then(data => {
-    countriesLayer = L.geoJSON(data, {
-      style: styleCountries,
-      onEachFeature: onEachCountry
-    });
-    countriesLayer.addTo(map);
-    console.log("Countries layer loaded");
-  });
-
-// Load US states
-fetch('https://eric.clst.org/assets/wiki/uploads/Stuff/gz_2010_us_040_00_500k.json')
-  .then(res => res.json())
-  .then(data => {
-    usStatesLayer = L.geoJSON(data, {
-      style: styleStates,
-      onEachFeature: onEachState
-    });
-    // Do NOT add to map initially
-    console.log("US states layer loaded");
-  });
-
-map.on('zoomend', () => {
-  const zoom = map.getZoom();
-  console.log("Zoom level:", zoom);
-  if (zoom >= 5) {
-    if (countriesLayer && map.hasLayer(countriesLayer)) {
-      map.removeLayer(countriesLayer);
-    }
-    if (usStatesLayer && !map.hasLayer(usStatesLayer)) {
-      usStatesLayer.addTo(map);
-    }
-  } else {
-    if (usStatesLayer && map.hasLayer(usStatesLayer)) {
-      map.removeLayer(usStatesLayer);
-    }
-    if (countriesLayer && !map.hasLayer(countriesLayer)) {
-      countriesLayer.addTo(map);
-    }
-  }
-});
+// Load countries GeoJSON and add to map
+fetch('https://raw.githubusercontent
