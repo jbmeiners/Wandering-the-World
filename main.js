@@ -1,89 +1,57 @@
-const countryAlbumLinks = {
+// Album links - ISO Alpha-3 country codes
+const albumLinks = {
   "ECU": "https://photos.app.goo.gl/2WRE3e5T3aumguWS9",
   "CHN": "https://photos.app.goo.gl/N9SYsuYxfsLpmN35A"
 };
 
-const stateAlbumLinks = {
-  "SC": "https://photos.app.goo.gl/juKhxjzKhdjEWcGG6"
-};
+// Initialize map centered roughly between Ecuador and China
+var map = L.map('map').setView([20, 20], 2);
 
-const map = L.map('map').setView([20, 0], 2);
-
+// Add OpenStreetMap tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-let countriesLayer;
-let usStatesLayer;
-
-function styleCountries(feature) {
-  return {
-    fillColor: countryAlbumLinks[feature.id] ? "#ff8800" : "#00aaff",
-    fillOpacity: countryAlbumLinks[feature.id] ? 0.6 : 0.2,
-    weight: 1,
-    color: "#666"
-  };
-}
-
-function styleStates(feature) {
-  return {
-    fillColor: stateAlbumLinks[feature.properties.postal] ? "#ff8800" : "#00aaff",
-    fillOpacity: stateAlbumLinks[feature.properties.postal] ? 0.6 : 0.2,
-    weight: 1,
-    color: "#666"
-  };
-}
-
-function onEachCountry(feature, layer) {
-  const code = feature.id;
-  const name = feature.properties.name;
-  layer.bindTooltip(name);
-  if (countryAlbumLinks[code]) {
-    const popupHtml = `
-      <strong>${name}</strong><br>
-      <a href="${countryAlbumLinks[code]}" target="_blank" rel="noopener noreferrer">
-        📸 View pictures from ${name}
-      </a>`;
-    layer.bindPopup(popupHtml);
-    layer.on('click', () => layer.openPopup());
-  }
-}
-
-function onEachState(feature, layer) {
-  const code = feature.properties.postal;
-  const name = feature.properties.name;
-  layer.bindTooltip(name);
-  if (stateAlbumLinks[code]) {
-    const popupHtml = `
-      <strong>${name}</strong><br>
-      <a href="${stateAlbumLinks[code]}" target="_blank" rel="noopener noreferrer">
-        📸 View pictures from ${name}
-      </a>`;
-    layer.bindPopup(popupHtml);
-    layer.on('click', () => layer.openPopup());
-  }
-}
-
-fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
-  .then(res => res.json())
-  .then(data => {
-    countriesLayer = L.geoJSON(data, {
-      style: styleCountries,
-      onEachFeature: onEachCountry
-    });
-    countriesLayer.addTo(map);
-    console.log("Countries layer loaded");
+// Fetch GeoJSON data
+fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
+  .then(res => {
+    console.log("GeoJSON fetch status:", res.status);
+    return res.json();
   })
-  .catch(err => console.error("Countries GeoJSON load error:", err));
-
-fetch('https://eric.clst.org/assets/wiki/uploads/Stuff/gz_2010_us_040_00_500k.json')
-  .then(res => res.json())
   .then(data => {
-    usStatesLayer = L.geoJSON(data, {
-      style: styleStates,
-      onEachFeature: onEachState
-    });
-    usStatesLayer.addTo(map);
-    console.log("US States layer loaded");
+    console.log("GeoJSON features count:", data.features.length);
+
+    L.geoJSON(data, {
+      style: feature => ({
+        color: "#666",
+        weight: 1,
+        fillColor: albumLinks[feature.id] ? "#ff8800" : "#00aaff",
+        fillOpacity: albumLinks[feature.id] ? 0.6 : 0.2
+      }),
+      onEachFeature: (feature, layer) => {
+        const code = feature.id;
+        const name = feature.properties.name;
+
+        // Tooltip on hover with country name
+        layer.bindTooltip(name);
+
+        if (albumLinks[code]) {
+          // Popup content with dynamic country name and clickable link
+          const popupHtml = `
+            <strong>${name}</strong><br>
+            <a href="${albumLinks[code]}" target="_blank" rel="noopener noreferrer">
+              📸 View pictures from ${name}
+            </a>
+          `;
+
+          layer.bindPopup(popupHtml);
+
+          // Open popup on click
+          layer.on("click", function () {
+            this.openPopup();
+          });
+        }
+      }
+    }).addTo(map);
   })
-  .catch(err => console.error("US States GeoJSON load error:", err));
+  .catch(err => console.error("GeoJSON load error:", err));
