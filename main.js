@@ -20,11 +20,7 @@ fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.g
   .then(data => {
     console.log("GeoJSON features count:", data.features.length);
 
-    // Confirm Ecuador feature id
-    const ecuadorFeature = data.features.find(f => f.properties.name === "Ecuador");
-    console.log("Ecuador feature:", ecuadorFeature);
-
-    // Add GeoJSON layer with styles and popups
+    // Add GeoJSON layer with styles and click handler
     L.geoJSON(data, {
       style: feature => ({
         color: "#666",
@@ -39,17 +35,8 @@ fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.g
         layer.bindTooltip(name);
 
         if (albumLinks[code]) {
-          console.log(`Binding popup for ${name} (${code})`);
-          const popupHtml = `
-            <strong>${name}</strong><br>
-            <a href="${albumLinks[code]}" target="_blank" rel="noopener noreferrer">
-              📸 View Photo Album
-            </a>
-          `;
-          layer.bindPopup(popupHtml);
           layer.on("click", function () {
-            console.log(`Clicked on ${name}`);
-            this.openPopup();
+            window.open(albumLinks[code], "_blank", "noopener");
           });
         }
       }
