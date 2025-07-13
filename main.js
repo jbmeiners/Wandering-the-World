@@ -31,16 +31,15 @@ fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.g
 
         // If we have an album for this country, show popup with a link
         if (albumLinks[code]) {
-          const popupContent = `
-            <div>
-              <strong>${name}</strong><br>
-              <a href="${albumLinks[code]}" target="_blank" rel="noopener noreferrer">
-                📸 View Photo Album
-              </a>
-            </div>
-          `;
-
-          layer.bindPopup(popupContent);
+         const popupContent = `
+  <div>
+    <strong>${name}</strong><br>
+    <a href="${albumLinks[code]}" target="_blank" rel="noopener noreferrer">
+      📸 View Photo Album
+    </a>
+  </div>
+`;
+layer.bindPopup(popupContent);
 
           layer.on("click", function () {
             this.openPopup();
