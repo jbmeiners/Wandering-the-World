@@ -1,52 +1,54 @@
-// Set up the base map
-var map = L.map('map').setView([20, 0], 2);
+// Initialize map
+var map = L.map('map').setView([0, -78], 4); // Center near Ecuador
 
-// Add OpenStreetMap tiles
+// Add base map layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// Define album links by ISO country code
+// Album links by ISO country code
 var albumLinks = {
   "EC": "https://photos.app.goo.gl/2WRE3e5T3aumguWS9"
 };
 
-// Load GeoJSON for countries
+// Load country GeoJSON
 fetch("https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson")
-  .then(response => response.json())
+  .then(response => {
+    if (!response.ok) throw new Error("GeoJSON fetch failed");
+    return response.json();
+  })
   .then(data => {
     L.geoJSON(data, {
-      onEachFeature: function (feature, layer) {
-        const code = feature.properties.ISO_A2;
-        const name = feature.properties.ADMIN;
-
-        // Show country name on hover
-        layer.bindTooltip(name, { permanent: false });
-
-        // Add click behavior
-        layer.on("click", function () {
-          if (albumLinks[code]) {
-            window.open(albumLinks[code], "_blank");
-          } else {
-            alert("No album linked for " + name);
-          }
-        });
-
-        // Optional: change style on hover
-        layer.on("mouseover", function () {
-          layer.setStyle({ weight: 2, color: "#333", fillOpacity: 0.4 });
-        });
-        layer.on("mouseout", function () {
-          layer.setStyle({ weight: 1, color: "#666", fillOpacity: 0.2 });
-        });
-
-        // Style for each country
-        layer.setStyle({
+      style: function (feature) {
+        return {
           color: "#666",
           weight: 1,
           fillColor: "#00aaff",
           fillOpacity: 0.2
-        });
+        };
+      },
+      onEachFeature: function (feature, layer) {
+        const code = feature.properties.ISO_A2;
+        const name = feature.properties.ADMIN;
+
+        // Tooltip on hover
+        layer.bindTooltip(name);
+
+        // Make clickable if there's an album
+        if (albumLinks[code]) {
+          layer.on("click", function () {
+            window.open(albumLinks[code], "_blank");
+          });
+
+          // Optional: highlight album-linked countries
+          layer.setStyle({
+            fillColor: "#ff9900", // Different color for countries with albums
+            fillOpacity: 0.5
+          });
+        }
       }
     }).addTo(map);
+  })
+  .catch(err => {
+    console.error("GeoJSON load error:", err);
   });
