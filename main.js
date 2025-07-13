@@ -41,7 +41,8 @@ fetch(geoUrl)
                 📸 View Photo Album
               </a>
             `;
-            layer.bindPopup(popupContent).openPopup(e.latlng);
+            // Bind and open popup correctly
+            layer.bindPopup(popupContent).openPopup();
           });
         }
       }
