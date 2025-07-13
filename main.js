@@ -1,57 +1,86 @@
-// Album links - ISO Alpha-3 country codes
-const albumLinks = {
+const countryAlbumLinks = {
   "ECU": "https://photos.app.goo.gl/2WRE3e5T3aumguWS9",
   "CHN": "https://photos.app.goo.gl/N9SYsuYxfsLpmN35A"
 };
 
-// Initialize map centered roughly between Ecuador and China
-var map = L.map('map').setView([20, 20], 2);
+const stateAlbumLinks = {
+  "SC": "https://photos.app.goo.gl/juKhxjzKhdjEWcGG6"
+};
 
-// Add OpenStreetMap tile layer
+const map = L.map('map').setView([20, 0], 2);
+
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// Fetch GeoJSON data
-fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
-  .then(res => {
-    console.log("GeoJSON fetch status:", res.status);
-    return res.json();
-  })
-  .then(data => {
-    console.log("GeoJSON features count:", data.features.length);
+let countriesLayer;
+let usStatesLayer;
 
-    L.geoJSON(data, {
+// Load countries GeoJSON
+fetch('countries.geojson')
+  .then(res => res.json())
+  .then(data => {
+    countriesLayer = L.geoJSON(data, {
       style: feature => ({
-        color: "#666",
+        fillColor: countryAlbumLinks[feature.id] ? "#ff8800" : "#00aaff",
+        fillOpacity: countryAlbumLinks[feature.id] ? 0.6 : 0.2,
         weight: 1,
-        fillColor: albumLinks[feature.id] ? "#ff8800" : "#00aaff",
-        fillOpacity: albumLinks[feature.id] ? 0.6 : 0.2
+        color: "#666"
       }),
       onEachFeature: (feature, layer) => {
         const code = feature.id;
         const name = feature.properties.name;
-
-        // Tooltip on hover with country name
         layer.bindTooltip(name);
 
-        if (albumLinks[code]) {
-          // Popup content with dynamic country name and clickable link
-          const popupHtml = `
+        if (countryAlbumLinks[code]) {
+          layer.bindPopup(`
             <strong>${name}</strong><br>
-            <a href="${albumLinks[code]}" target="_blank" rel="noopener noreferrer">
+            <a href="${countryAlbumLinks[code]}" target="_blank" rel="noopener noreferrer">
               📸 View pictures from ${name}
             </a>
-          `;
-
-          layer.bindPopup(popupHtml);
-
-          // Open popup on click
-          layer.on("click", function () {
-            this.openPopup();
-          });
+          `);
+          layer.on('click', () => layer.openPopup());
         }
       }
     }).addTo(map);
-  })
-  .catch(err => console.error("GeoJSON load error:", err));
+  });
+
+// Load US States GeoJSON
+fetch('us-states.geojson')
+  .then(res => res.json())
+  .then(data => {
+    usStatesLayer = L.geoJSON(data, {
+      style: feature => ({
+        fillColor: stateAlbumLinks[feature.properties.postal] ? "#ff8800" : "#00aaff",
+        fillOpacity: stateAlbumLinks[feature.properties.postal] ? 0.6 : 0.2,
+        weight: 1,
+        color: "#666"
+      }),
+      onEachFeature: (feature, layer) => {
+        const code = feature.properties.postal;
+        const name = feature.properties.name;
+        layer.bindTooltip(name);
+
+        if (stateAlbumLinks[code]) {
+          layer.bindPopup(`
+            <strong>${name}</strong><br>
+            <a href="${stateAlbumLinks[code]}" target="_blank" rel="noopener noreferrer">
+              📸 View pictures from ${name}
+            </a>
+          `);
+          layer.on('click', () => layer.openPopup());
+        }
+      }
+    });
+  });
+
+// Control visibility based on zoom level
+map.on('zoomend', () => {
+  if (map.getZoom() >= 5) {
+    if (countriesLayer) map.removeLayer(countriesLayer);
+    if (usStatesLayer) usStatesLayer.addTo(map);
+  } else {
+    if (usStatesLayer) map.removeLayer(usStatesLayer);
+    if (countriesLayer) countriesLayer.addTo(map);
+  }
+});
