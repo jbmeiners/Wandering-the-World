@@ -12,7 +12,7 @@ var albumLinks = {
 };
 
 // Load country GeoJSON
-fetch("https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson")
+fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
   .then(response => {
     if (!response.ok) throw new Error("GeoJSON fetch failed");
     return response.json();
