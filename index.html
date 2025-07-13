@@ -4,12 +4,10 @@
   <meta charset="UTF-8" />
   <title>Interactive World Map</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Leaflet CSS -->
+  <!-- Leaflet CSS without integrity -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-    integrity="sha256-sA+ePhlqvzUPa9vG9U4x65lzL8VtQ3Nju48T9Y3OGNk="
-    crossorigin=""
   />
   <style>
     html, body, #map {
@@ -23,12 +21,8 @@
 <body>
   <div id="map"></div>
 
-  <!-- Leaflet JS -->
-  <script
-    src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
-    integrity="sha256-nNR9v+XXcp3A1R0p0FmC4FrHP6z3Bk6BPP3CjE6j0bY="
-    crossorigin=""
-  ></script>
+  <!-- Leaflet JS without integrity -->
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
   
   <!-- Your main script -->
   <script src="main.js?v=4"></script>
