@@ -1,13 +1,13 @@
 const countryAlbumLinks = {
   "ECU": "https://photos.app.goo.gl/2WRE3e5T3aumguWS9",
   "CHN": "https://photos.app.goo.gl/N9SYsuYxfsLpmN35A"
-  // Add more countries here, use 3-letter ISO codes (feature.id)
+  
 };
 
 const stateAlbumLinks = {
   "CA": "https://photos.app.goo.gl/californiaAlbumLink",
   "TX": "https://photos.app.goo.gl/texasAlbumLink"
-  // Add more states here with 2-letter postal codes (feature.properties.postal)
+  
 };
 
 const map = L.map('map').setView([20, 0], 2);
