@@ -1,51 +1,50 @@
-// Set initial view centered on Ecuador
+// Initialize the map centered on Ecuador
 var map = L.map('map').setView([-1.5, -78], 5);
 
-// Add base map layer
+// Add the base tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// Album links by ISO code
+// Album links by ISO country code
 const albumLinks = {
   "EC": "https://photos.app.goo.gl/2WRE3e5T3aumguWS9"
 };
 
-// Use the Johan GeoJSON source with "id" as ISO code
+// GeoJSON source with country shapes
 const geoUrl = "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json";
 
-// Load the country shapes and display them
 fetch(geoUrl)
   .then(res => res.json())
   .then(data => {
     L.geoJSON(data, {
-      style: f => ({
-        color: "#666",
-        weight: 1,
-        fillColor: albumLinks[f.id] ? "#ff8800" : "#00aaff",
-        fillOpacity: albumLinks[f.id] ? 0.6 : 0.2
-      }),
-      onEachFeature: (f, layer) => {
-        const code = f.id;
-        const name = f.properties.name;
+      style: function (feature) {
+        return {
+          color: "#666",
+          weight: 1,
+          fillColor: albumLinks[feature.id] ? "#ff8800" : "#00aaff",
+          fillOpacity: albumLinks[feature.id] ? 0.6 : 0.2
+        };
+      },
+      onEachFeature: function (feature, layer) {
+        const code = feature.id;
+        const name = feature.properties.name;
 
-        // Tooltip on hover
         layer.bindTooltip(name, { interactive: true });
 
-        // If we have an album for this country, show a popup with a link
+        // Always bind popup — with album link if exists
+        let popupContent = `<strong>${name}</strong>`;
         if (albumLinks[code]) {
-          layer.on("click", function (e) {
-            const popupContent = `
-              <strong>${name}</strong><br/>
-              <a href="${albumLinks[code]}" target="_blank" rel="noopener noreferrer">
-                📸 View Photo Album
-              </a>
-            `;
-            // Bind and open popup correctly
-            layer.bindPopup(popupContent).openPopup();
-          });
+          popupContent += `<br><a href="${albumLinks[code]}" target="_blank" rel="noopener noreferrer">📸 View Photo Album</a>`;
         }
+
+        layer.bindPopup(popupContent);
+
+        // Open popup on click (so it works even if user clicks multiple times)
+        layer.on("click", function (e) {
+          layer.openPopup(e.latlng);
+        });
       }
     }).addTo(map);
   })
-  .catch(err => console.error("Error loading GeoJSON:", err));
+  .catch(err => console.error("GeoJSON load error:", err));
