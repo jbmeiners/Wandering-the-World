@@ -1,4 +1,4 @@
-// Album links - use correct country code keys (ISO Alpha-3)
+// Album links - use ISO Alpha-3 country codes
 const albumLinks = {
   "ECU": "https://photos.app.goo.gl/2WRE3e5T3aumguWS9"
 };
@@ -6,10 +6,12 @@ const albumLinks = {
 // Initialize map centered on Ecuador
 var map = L.map('map').setView([-1.5, -78], 5);
 
+// Add OpenStreetMap tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
+// Fetch GeoJSON data
 fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
   .then(res => {
     console.log("GeoJSON fetch status:", res.status);
@@ -18,10 +20,11 @@ fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.g
   .then(data => {
     console.log("GeoJSON features count:", data.features.length);
 
-    // Check Ecuador feature and log to confirm id
+    // Confirm Ecuador feature id
     const ecuadorFeature = data.features.find(f => f.properties.name === "Ecuador");
     console.log("Ecuador feature:", ecuadorFeature);
 
+    // Add GeoJSON layer with styles and popups
     L.geoJSON(data, {
       style: feature => ({
         color: "#666",
