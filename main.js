@@ -1,13 +1,13 @@
 const countryAlbumLinks = {
   "ECU": "https://photos.app.goo.gl/2WRE3e5T3aumguWS9",
   "CHN": "https://photos.app.goo.gl/N9SYsuYxfsLpmN35A"
-  // Add more country codes and links here as needed
+  // Add more countries here
 };
 
 const stateAlbumLinks = {
   "CA": "https://photos.app.goo.gl/californiaAlbumLink",
   "TX": "https://photos.app.goo.gl/texasAlbumLink"
-  // Add more US state codes and links here as needed
+  // Add more US states here
 };
 
 const map = L.map('map').setView([20, 0], 2);
@@ -15,9 +15,6 @@ const map = L.map('map').setView([20, 0], 2);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
-
-let countriesLayer;
-let usStatesLayer;
 
 function styleCountries(feature) {
   return {
@@ -62,10 +59,4 @@ function onEachState(feature, layer) {
       <a href="${stateAlbumLinks[code]}" target="_blank" rel="noopener noreferrer">
         📸 View pictures from ${name}
       </a>`;
-    layer.bindPopup(popupHtml);
-    layer.on('click', () => layer.openPopup());
-  }
-}
-
-// Load countries GeoJSON and add to map
-fetch('https://raw.githubusercontent
+    layer.bindPopup(popupH
