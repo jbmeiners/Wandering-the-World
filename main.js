@@ -1,19 +1,22 @@
-var map = L.map('map').setView([-1.5, -78], 5); // center on Ecuador
+// Set initial view centered on Ecuador
+var map = L.map('map').setView([-1.5, -78], 5);
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-  attribution:'© OpenStreetMap contributors'
+// Add base map layer
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// Album link using country ISO code
+// Album links by ISO code
 const albumLinks = {
   "EC": "https://photos.app.goo.gl/2WRE3e5T3aumguWS9"
 };
 
-// This GeoJSON source uses "id" as the ISO code
+// Use the Johan GeoJSON source with "id" as ISO code
 const geoUrl = "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json";
 
+// Load the country shapes and display them
 fetch(geoUrl)
-  .then(r => r.json())
+  .then(res => res.json())
   .then(data => {
     L.geoJSON(data, {
       style: f => ({
@@ -26,12 +29,22 @@ fetch(geoUrl)
         const code = f.id;
         const name = f.properties.name;
 
+        // Tooltip on hover
         layer.bindTooltip(name, { interactive: true });
 
+        // If we have an album for this country, show a popup with a link
         if (albumLinks[code]) {
-          layer.on("click", () => window.open(albumLinks[code], "_blank"));
+          layer.on("click", function (e) {
+            const popupContent = `
+              <strong>${name}</strong><br/>
+              <a href="${albumLinks[code]}" target="_blank" rel="noopener noreferrer">
+                📸 View Photo Album
+              </a>
+            `;
+            layer.bindPopup(popupContent).openPopup(e.latlng);
+          });
         }
       }
     }).addTo(map);
   })
-  .catch(e => console.error("GeoJSON error:", e));
+  .catch(err => console.error("Error loading GeoJSON:", err));
