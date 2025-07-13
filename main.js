@@ -7,7 +7,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 // Album links
 const albumLinks = {
-  "EC": "https://photos.app.goo.gl/2WRE3e5T3aumguWS9"
+  "Ecuador": "https://photos.app.goo.gl/2WRE3e5T3aumguWS9"
 };
 
 fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
