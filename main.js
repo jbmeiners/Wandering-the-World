@@ -20,7 +20,6 @@ fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.g
   .then(data => {
     console.log("GeoJSON features count:", data.features.length);
 
-    // Add GeoJSON layer with styles and click handler
     L.geoJSON(data, {
       style: feature => ({
         color: "#666",
@@ -32,7 +31,7 @@ fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.g
         const code = feature.id;
         const name = feature.properties.name;
 
-        layer.bindTooltip(name);
+        layer.bindTooltip(name); // Show name tooltip on hover
 
         if (albumLinks[code]) {
           layer.on("click", function () {
