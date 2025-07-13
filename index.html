@@ -1,23 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>World Photo Map</title>
-  <meta charset="utf-8" />
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
-  <style>
-    #map {
-      height: 100vh;
-      width: 100%;
-    }
-  </style>
-</head>
-<body>
-  <div id="map"></div>
+// Simple map setup
+var map = L.map('map').setView([20, 0], 2);
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="main.js"></script>
-</body>
-</html>
+// Add OpenStreetMap tile layer
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
