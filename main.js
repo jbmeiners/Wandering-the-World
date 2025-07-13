@@ -1,18 +1,12 @@
-// Initialize map centered on Ecuador
-var map = L.map('map').setView([-1.5, -78], 5);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; OpenStreetMap contributors'
-}).addTo(map);
-
-// Album links
-const albumLinks = {
-  "Ecuador": "https://photos.app.goo.gl/2WRE3e5T3aumguWS9"
-};
-
 fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
-  .then(res => res.json())
+  .then(res => {
+    console.log("GeoJSON fetch status:", res.status);
+    return res.json();
+  })
   .then(data => {
+    console.log("GeoJSON features count:", data.features.length);
+    console.log("First feature:", data.features[0]);
+    // rest of your code below...
     L.geoJSON(data, {
       style: feature => ({
         color: "#666",
