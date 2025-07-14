@@ -10,24 +10,24 @@ const albumLinks = {
   "CRI": "https://photos.app.goo.gl/qaYthYA3FrJbNvzMA"
 };
 
-// Initialize map centered roughly between Ecuador and China, with world wrapping disabled
+// Initialize map with tight bounds to prevent world wrapping
 var map = L.map('map', {
   worldCopyJump: false,
   maxBounds: [
-    [-90, -180],
-    [90, 180]
+    [-60, -160], // Southwest corner
+    [85, 180]    // Northeast corner
   ],
   maxBoundsViscosity: 1.0,
   minZoom: 2,
   maxZoom: 6
-}).setView([20, 20], 2);
+}).setView([25, 10], 2);
 
 // Add OpenStreetMap tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// Fetch GeoJSON data
+// Fetch GeoJSON country shapes
 fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
   .then(res => {
     console.log("GeoJSON fetch status:", res.status);
@@ -47,11 +47,9 @@ fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.g
         const code = feature.id;
         const name = feature.properties.name;
 
-        // Tooltip on hover with country name
         layer.bindTooltip(name);
 
         if (albumLinks[code]) {
-          // Popup content with dynamic country name and clickable link
           const popupHtml = `
             <strong>${name}</strong><br>
             <a href="${albumLinks[code]}" target="_blank" rel="noopener noreferrer">
@@ -60,8 +58,6 @@ fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.g
           `;
 
           layer.bindPopup(popupHtml);
-
-          // Open popup on click
           layer.on("click", function () {
             this.openPopup();
           });
