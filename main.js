@@ -10,8 +10,17 @@ const albumLinks = {
   "CRI": "https://photos.app.goo.gl/qaYthYA3FrJbNvzMA"
 };
 
-// Initialize map centered roughly between Ecuador and China
-var map = L.map('map').setView([20, 20], 2);
+// Initialize map centered roughly between Ecuador and China, with world wrapping disabled
+var map = L.map('map', {
+  worldCopyJump: false,
+  maxBounds: [
+    [-90, -180],
+    [90, 180]
+  ],
+  maxBoundsViscosity: 1.0,
+  minZoom: 2,
+  maxZoom: 6
+}).setView([20, 20], 2);
 
 // Add OpenStreetMap tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
