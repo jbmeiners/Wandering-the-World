@@ -6,7 +6,8 @@ const albumLinks = {
   "GTM": "https://photos.app.goo.gl/AESH3PKSnDmuo1r49",
   "MEX": "https://photos.app.goo.gl/C4zcTB61eXuCDri5A",
   "PER": "https://photos.app.goo.gl/bed4JQ6gMqhVekFA8",
-  "NIC": "https://photos.app.goo.gl/cxqRjSRVwKZvJeBo9"
+  "NIC": "https://photos.app.goo.gl/cxqRjSRVwKZvJeBo9",
+  "CRI": "https://photos.app.goo.gl/qaYthYA3FrJbNvzMA"
 };
 
 // Initialize map centered roughly between Ecuador and China
