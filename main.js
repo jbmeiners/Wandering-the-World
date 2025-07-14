@@ -1,7 +1,11 @@
 // Album links - ISO Alpha-3 country codes
 const albumLinks = {
   "ECU": "https://photos.app.goo.gl/2WRE3e5T3aumguWS9",
-  "CHN": "https://photos.app.goo.gl/N9SYsuYxfsLpmN35A"
+  "CHN": "https://photos.app.goo.gl/N9SYsuYxfsLpmN35A",
+  "HND": "https://photos.app.goo.gl/2ZrPVx21DUVhtWo29",
+  "GTM": "https://photos.app.goo.gl/AESH3PKSnDmuo1r49",
+  "MEX": "https://photos.app.goo.gl/C4zcTB61eXuCDri5A",
+  "PER": "https://photos.app.goo.gl/bed4JQ6gMqhVekFA8"
 };
 
 // Initialize map centered roughly between Ecuador and China
